@@ -114,11 +114,19 @@ jobs:
               fail_fast = !labels.map(label => label.name).includes("CI-no-fail-fast");
             }
 
-            core.info(`platforms = ${JSON.stringify(platforms)}`);
-            core.setOutput("platform", platforms);
+            let platforms_string = JSON.stringify(platforms)
+            core.info(`platforms = ${platforms_string}`);
+            core.setOutput("platform", platforms_string);
+            core.setOutput("foo", "bar");
+            core.setOutput("somelist", [123]);
 
             core.info(`fail fast = ${fail_fast}`);
             core.setOutput("fail-fast", fail_fast);
+            core.setOutput("bar", 123);
+      - name: print output
+        shell: sh
+        run: |
+          cat $GITHUB_OUTPUT
     env:
       OS_MATRIX: |
         - ubuntu-latest
@@ -141,9 +149,12 @@ jobs:
         shell: sh
         run: |
           echo "platforms is:"
-          echo "${{ needs.generate-matrix.outputs.fail-fast }}"
-          echo "${{ needs.generate-matrix.outputs }}"
-          echo "${{ needs.generate-matrix.outputs.platform }}"
+          echo "fail fast ${{ needs.generate-matrix.outputs.fail-fast }}"
+          echo "outputs ${{ needs.generate-matrix.outputs }}"
+          echo "allplatforms ${{ needs.generate-matrix.outputs.allplatforms }}"
+          echo "foo ${{ needs.generate-matrix.outputs.foo }}"
+          echo "somelist ${{ needs.generate-matrix.outputs.somelist }}"
+          echo "bar ${{ needs.generate-matrix.outputs.bar }}"
 
   test:
     name: Test
