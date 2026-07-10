@@ -289,6 +289,30 @@ def _get_immediate_path_dependencies(manifest_dir_path: Path, cargo: _TomlFile) 
     return path_dependencies
 
 
+def has_experimental_inspect(project_dir: Path) -> bool:
+    """Check if the project has the pyo3 `experimental-inspect` feature enabled.
+
+    This feature enables automatic stub generation when combined with
+    `maturin develop --generate-stubs`.
+    """
+    manifest_path = find_cargo_manifest(project_dir)
+    if manifest_path is None:
+        return False
+    try:
+        cargo = _TomlFile.load(manifest_path)
+    except tomllib.TOMLDecodeError:
+        logger.info("failed to parse '%s' as TOML", manifest_path)
+        return False
+
+    cargo_deps = cargo.get_value_or_default(["dependencies"], dict, {})
+    pyo3_dep = cargo_deps.get("pyo3")
+    if isinstance(pyo3_dep, dict):
+        features: Any = pyo3_dep.get("features", [])
+        if isinstance(features, list) and "experimental-inspect" in features:
+            return True
+    return False
+
+
 def _resolve_py_root(project_dir: Path, pyproject: _TomlFile) -> Path:
     """This follows the same logic as project_layout.rs."""
     py_root = pyproject.get_value(["tool", "maturin", "python-source"], str)
@@ -313,8 +337,7 @@ def _resolve_py_root(project_dir: Path, pyproject: _TomlFile) -> Path:
 
 
 def _resolve_bindings(pyproject: _TomlFile, cargo: _TomlFile) -> str:
-    """
-    Resolve the maturin bindings type.
+    """Resolve the maturin bindings type.
 
     Matches maturin's bridge detection logic (bridge/detection.rs):
     """

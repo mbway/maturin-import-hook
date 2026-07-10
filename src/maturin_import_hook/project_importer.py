@@ -1,4 +1,5 @@
 import contextlib
+import dataclasses
 import importlib
 import importlib.abc
 import importlib.machinery
@@ -36,6 +37,7 @@ from maturin_import_hook._logging import logger
 from maturin_import_hook._resolve_project import (
     MaturinProject,
     ProjectResolver,
+    has_experimental_inspect,
     is_maybe_maturin_project,
 )
 from maturin_import_hook.error import ImportHookError
@@ -96,7 +98,10 @@ class MaturinProjectImporter(importlib.abc.MetaPathFinder):
 
     def get_settings(self, module_path: str, source_path: Path) -> MaturinSettings:
         """This method can be overridden in subclasses to customize settings for specific projects."""
-        return self._settings if self._settings is not None else MaturinSettings.default()
+        settings = self._settings if self._settings is not None else MaturinSettings.default()
+        if not settings.generate_stubs and has_experimental_inspect(source_path):
+            settings = dataclasses.replace(settings, generate_stubs=True)
+        return settings
 
     def find_maturin(self) -> Path:
         """this method can be overridden to specify an alternative maturin binary to use"""
@@ -535,6 +540,7 @@ class DefaultProjectFileSearcher(ProjectFileSearcher):
         ".so",
         ".py",
         ".pyc",
+        ".pyi",  # generated stub files from `maturin --generate-stubs`
     }
 
     def __init__(
