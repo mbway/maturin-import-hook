@@ -2,6 +2,10 @@
   "commit": "6febbe20f0006e62299c6a88b49e3ede5e2e2318",
   "crates": {
     "bin-with-python-module": {
+      "binary_names": [
+        "bin-with-python-module"
+      ],
+      "bindings": "bin",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": "bin_with_python_module",
       "module_full_name": "bin_with_python_module",
@@ -9,6 +13,8 @@
       "python_module": "bin_with_python_module"
     },
     "cffi-mixed": {
+      "binary_names": [],
+      "bindings": "cffi",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": "cffi_mixed",
       "module_full_name": "cffi_mixed",
@@ -16,6 +22,8 @@
       "python_module": "cffi_mixed"
     },
     "cffi-mixed-implicit": {
+      "binary_names": [],
+      "bindings": "cffi",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": "python/cffi_mixed_implicit/some_rust",
       "module_full_name": "cffi_mixed_implicit.some_rust.rust",
@@ -23,6 +31,8 @@
       "python_module": "python/cffi_mixed_implicit"
     },
     "cffi-mixed-include-exclude": {
+      "binary_names": [],
+      "bindings": "cffi",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": "cffi_mixed_include_exclude",
       "module_full_name": "cffi_mixed_include_exclude",
@@ -30,6 +40,8 @@
       "python_module": "cffi_mixed_include_exclude"
     },
     "cffi-mixed-py-subdir": {
+      "binary_names": [],
+      "bindings": "cffi",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": "python/cffi_mixed_py_subdir",
       "module_full_name": "cffi_mixed_py_subdir._cffi_mixed",
@@ -37,6 +49,8 @@
       "python_module": "python/cffi_mixed_py_subdir"
     },
     "cffi-mixed-src": {
+      "binary_names": [],
+      "bindings": "cffi",
       "cargo_manifest_path": "rust/Cargo.toml",
       "extension_module_dir": "src/cffi_mixed_src",
       "module_full_name": "cffi_mixed_src",
@@ -44,6 +58,8 @@
       "python_module": "src/cffi_mixed_src"
     },
     "cffi-mixed-submodule": {
+      "binary_names": [],
+      "bindings": "cffi",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": "cffi_mixed_submodule/rust_module",
       "module_full_name": "cffi_mixed_submodule.rust_module.rust",
@@ -51,6 +67,8 @@
       "python_module": "cffi_mixed_submodule"
     },
     "cffi-mixed-with-path-dep": {
+      "binary_names": [],
+      "bindings": "cffi",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": "cffi_mixed_with_path_dep",
       "module_full_name": "cffi_mixed_with_path_dep",
@@ -58,6 +76,8 @@
       "python_module": "cffi_mixed_with_path_dep"
     },
     "cffi-pure": {
+      "binary_names": [],
+      "bindings": "cffi",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": null,
       "module_full_name": "cffi_pure",
@@ -65,6 +85,11 @@
       "python_module": null
     },
     "hello-world": {
+      "binary_names": [
+        "foo",
+        "hello-world"
+      ],
+      "bindings": "bin",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": null,
       "module_full_name": "hello-world",
@@ -72,6 +97,8 @@
       "python_module": null
     },
     "lib_with_disallowed_lib": {
+      "binary_names": [],
+      "bindings": "pyo3",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": null,
       "module_full_name": "lib_with_disallowed_lib",
@@ -79,6 +106,8 @@
       "python_module": null
     },
     "lib_with_path_dep": {
+      "binary_names": [],
+      "bindings": "pyo3",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": null,
       "module_full_name": "lib_with_path_dep",
@@ -86,6 +115,10 @@
       "python_module": null
     },
     "license-test": {
+      "binary_names": [
+        "license-test"
+      ],
+      "bindings": "bin",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": null,
       "module_full_name": "license-test",
@@ -93,6 +126,8 @@
       "python_module": null
     },
     "pyo3-abi3-and-abi3t": {
+      "binary_names": [],
+      "bindings": "pyo3",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": null,
       "module_full_name": "pyo3_abi3_and_abi3t",
@@ -100,6 +135,8 @@
       "python_module": null
     },
     "pyo3-abi3t": {
+      "binary_names": [],
+      "bindings": "pyo3",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": null,
       "module_full_name": "pyo3_abi3t",
@@ -107,6 +144,8 @@
       "python_module": null
     },
     "pyo3-ffi-pure": {
+      "binary_names": [],
+      "bindings": "pyo3",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": null,
       "module_full_name": "pyo3_ffi_pure",
@@ -114,6 +153,8 @@
       "python_module": null
     },
     "pyo3-mixed": {
+      "binary_names": [],
+      "bindings": "pyo3",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": "pyo3_mixed",
       "module_full_name": "pyo3_mixed",
@@ -121,6 +162,8 @@
       "python_module": "pyo3_mixed"
     },
     "pyo3-mixed-include-exclude": {
+      "binary_names": [],
+      "bindings": "pyo3",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": "pyo3_mixed_include_exclude",
       "module_full_name": "pyo3_mixed_include_exclude",
@@ -128,6 +171,8 @@
       "python_module": "pyo3_mixed_include_exclude"
     },
     "pyo3-mixed-py-subdir": {
+      "binary_names": [],
+      "bindings": "pyo3",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": "python/pyo3_mixed_py_subdir",
       "module_full_name": "pyo3_mixed_py_subdir._pyo3_mixed",
@@ -135,6 +180,8 @@
       "python_module": "python/pyo3_mixed_py_subdir"
     },
     "pyo3-mixed-src": {
+      "binary_names": [],
+      "bindings": "pyo3",
       "cargo_manifest_path": "rust/Cargo.toml",
       "extension_module_dir": "src/pyo3_mixed_src",
       "module_full_name": "pyo3_mixed_src",
@@ -142,6 +189,8 @@
       "python_module": "src/pyo3_mixed_src"
     },
     "pyo3-mixed-workspace": {
+      "binary_names": [],
+      "bindings": "pyo3",
       "cargo_manifest_path": "rust/python/pyo3-mixed-workspace-py/Cargo.toml",
       "extension_module_dir": "src/pyo3_mixed_workspace",
       "module_full_name": "pyo3_mixed_workspace.pyo3_mixed_workspace_py",
@@ -149,6 +198,8 @@
       "python_module": "src/pyo3_mixed_workspace"
     },
     "pyo3-pure": {
+      "binary_names": [],
+      "bindings": "pyo3",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": null,
       "module_full_name": "pyo3_pure",
@@ -156,6 +207,8 @@
       "python_module": null
     },
     "pyo3-stub-generation-mixed": {
+      "binary_names": [],
+      "bindings": "pyo3",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": "pyo3_stub_generation_mixed",
       "module_full_name": "pyo3_stub_generation_mixed",
@@ -163,6 +216,8 @@
       "python_module": "pyo3_stub_generation_mixed"
     },
     "pyo3-stub-generation-mixed-py-subdir": {
+      "binary_names": [],
+      "bindings": "pyo3",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": "python/pyo3_stub_generation_mixed_py_subdir",
       "module_full_name": "pyo3_stub_generation_mixed_py_subdir._pyo3_mixed",
@@ -170,6 +225,8 @@
       "python_module": "python/pyo3_stub_generation_mixed_py_subdir"
     },
     "pyo3-stub-generation-pure": {
+      "binary_names": [],
+      "bindings": "pyo3",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": null,
       "module_full_name": "pyo3_stub_generation_pure",
@@ -177,6 +234,8 @@
       "python_module": null
     },
     "sdist_with_path_dep": {
+      "binary_names": [],
+      "bindings": "pyo3",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": null,
       "module_full_name": "sdist_with_path_dep",
@@ -184,6 +243,8 @@
       "python_module": null
     },
     "sdist_with_target_path_dep": {
+      "binary_names": [],
+      "bindings": "pyo3",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": null,
       "module_full_name": "sdist_with_target_path_dep",
@@ -191,6 +252,8 @@
       "python_module": null
     },
     "uniffi-mixed": {
+      "binary_names": [],
+      "bindings": "uniffi",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": "uniffi_mixed",
       "module_full_name": "uniffi_mixed",
@@ -198,6 +261,8 @@
       "python_module": "uniffi_mixed"
     },
     "uniffi-multiple-crates": {
+      "binary_names": [],
+      "bindings": "uniffi",
       "cargo_manifest_path": "crates/a/Cargo.toml",
       "extension_module_dir": null,
       "module_full_name": "a",
@@ -205,6 +270,8 @@
       "python_module": null
     },
     "uniffi-pure": {
+      "binary_names": [],
+      "bindings": "uniffi",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": null,
       "module_full_name": "uniffi_pure",
@@ -212,6 +279,8 @@
       "python_module": null
     },
     "uniffi-pure-proc-macro": {
+      "binary_names": [],
+      "bindings": "uniffi",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": null,
       "module_full_name": "uniffi_pure_proc_macro",
@@ -219,6 +288,8 @@
       "python_module": null
     },
     "with-data": {
+      "binary_names": [],
+      "bindings": "cffi",
       "cargo_manifest_path": "Cargo.toml",
       "extension_module_dir": null,
       "module_full_name": "with_data",

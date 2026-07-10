@@ -36,7 +36,6 @@ IGNORED_TEST_CRATES = {
     "license-test",  # not imported as a python module (subprocess only)
     "pyo3-bin",  # not imported as a python module (subprocess only)
     "workspace-inverted-order",  # this directory is not a maturin package, only the subdirectory
-    "bin-with-python-module",
     "cffi-mixed-include-exclude",  # build-time generated files not excluded from import hook. Build always stale
     "pyo3-mixed-include-exclude",  # build-time generated files not excluded from import hook. Build always stale
 }
@@ -73,6 +72,8 @@ class ResolvedPackage:
     module_full_name: str
     python_dir: Path
     python_module: Path | None
+    bindings: str
+    binary_names: list[str]
 
     @staticmethod
     def from_dict(data: dict[str, Any]) -> "ResolvedPackage":
@@ -82,6 +83,8 @@ class ResolvedPackage:
             module_full_name=data["module_full_name"],
             python_dir=Path(data["python_dir"]),
             python_module=map_optional(data["python_module"], Path),
+            bindings=data["bindings"],
+            binary_names=data["binary_names"],
         )
 
     def to_json(self) -> str:

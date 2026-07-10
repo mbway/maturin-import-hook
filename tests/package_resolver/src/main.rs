@@ -1,5 +1,5 @@
 use anyhow::Result;
-use maturin::BuildOptions;
+use maturin::{BridgeModel, BuildOptions};
 use serde_json::{json, Value};
 use std::{
     env, fs,
@@ -41,19 +41,38 @@ fn resolve_package(project_root: &Path) -> Result<Value> {
     } else {
         None
     };
-    let python_module = if let Some(p) = build_context.project.project_layout.python_module {
-        Some(relative_path(&p, &project_root)?)
+    let python_module = if let Some(p) = &build_context.project.project_layout.python_module {
+        Some(relative_path(p, &project_root)?)
     } else {
         None
     };
+    let bindings = bridge_name(build_context.project.bridge()).to_owned();
+    let binary_names: Vec<String> = build_context
+        .project
+        .compile_targets
+        .iter()
+        .filter(|ct| ct.bridge_model.is_bin())
+        .map(|ct| ct.target.name.clone())
+        .collect();
 
     Ok(json!({
+        "binary_names": binary_names,
+        "bindings": bindings,
         "cargo_manifest_path": relative_path(&build_context.project.manifest_path, &project_root)?,
         "extension_module_dir": extension_module_dir,
         "module_full_name": build_context.project.module_name,
         "python_dir": relative_path(&build_context.project.project_layout.python_dir, &project_root)?,
         "python_module": python_module,
     }))
+}
+
+fn bridge_name(bridge: &BridgeModel) -> &'static str {
+    match bridge {
+        BridgeModel::Bin(_) => "bin",
+        BridgeModel::PyO3(_) => "pyo3",
+        BridgeModel::Cffi => "cffi",
+        BridgeModel::UniFfi => "uniffi",
+    }
 }
 
 fn relative_path(p: &Path, root: &Path) -> Result<PathBuf> {

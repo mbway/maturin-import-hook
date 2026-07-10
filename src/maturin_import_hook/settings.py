@@ -38,6 +38,7 @@ class MaturinSettings:
 
     # `maturin develop` specific
     extras: list[str] | None = None
+    group: list[str] | None = None
     uv: bool = False
     skip_install: bool = False
     generate_stubs: bool = False
@@ -109,6 +110,9 @@ class MaturinSettings:
             if self.extras is not None:
                 args.append("--extras")
                 args.append(",".join(self.extras))
+            if self.group is not None:
+                args.append("--group")
+                args.append(",".join(self.group))
             if self.uv:
                 args.append("--uv")
             if self.skip_install:
@@ -171,6 +175,7 @@ class MaturinSettings:
 
         # `maturin develop` specific
         parser.add_argument("-E", "--extras", type=lambda arg: arg.split(","), action="extend")
+        parser.add_argument("-G", "--group", type=lambda arg: arg.split(","), action="extend")
         parser.add_argument("--uv", action="store_true")
         parser.add_argument("--skip-install", action="store_true")
         parser.add_argument("--generate-stubs", action="store_true")
