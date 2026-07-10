@@ -1222,6 +1222,57 @@ class TestDefaultProjectFileSearcher:
             with pytest.raises(FileNotFoundError):
                 list(s.get_source_paths(workspace / "missing", [], workspace / "extension"))
 
+        def test_excluded_dir_names(self, workspace: Path) -> None:
+            s = DefaultProjectFileSearcher(
+                source_excluded_dir_names={"data"},
+                source_excluded_dir_markers=set(),
+                source_excluded_file_extensions=set(),
+            )
+            (workspace / "src").mkdir()
+            (workspace / "src/source_file.rs").touch()
+            (workspace / "src/data").mkdir()
+            (workspace / "src/data/data.rs").touch()
+            (workspace / "src/data/subdir").mkdir()
+            (workspace / "src/data/subdir/more_data.rs").touch()
+
+            paths = set(s.get_source_paths(workspace, [], workspace / "extension_module"))
+            assert paths == {workspace / "src/source_file.rs"}
+
+        def test_excluded_dir_markers(self, workspace: Path) -> None:
+            s = DefaultProjectFileSearcher(
+                source_excluded_dir_names=set(),
+                source_excluded_dir_markers={".excluded"},
+                source_excluded_file_extensions=set(),
+            )
+            (workspace / "src").mkdir()
+            (workspace / "src/source_file.rs").touch()
+            (workspace / "src/data").mkdir()
+            (workspace / "src/data/data.rs").touch()
+            (workspace / "src/data/subdir").mkdir()
+            (workspace / "src/data/subdir/more_data.rs").touch()
+
+            paths = set(s.get_source_paths(workspace, [], workspace / "extension_module"))
+            assert paths == {
+                workspace / "src/source_file.rs",
+                workspace / "src/data/data.rs",
+                workspace / "src/data/subdir/more_data.rs",
+            }
+
+            (workspace / "src/data/.excluded").touch()
+
+            paths = set(s.get_source_paths(workspace, [], workspace / "extension_module"))
+            assert paths == {workspace / "src/source_file.rs"}
+
+            (workspace / "src/data/.excluded").unlink()
+            (workspace / "src/data/.excluded").mkdir()
+
+            paths = set(s.get_source_paths(workspace, [], workspace / "extension_module"))
+            assert paths == {
+                workspace / "src/source_file.rs",
+                workspace / "src/data/data.rs",
+                workspace / "src/data/subdir/more_data.rs",
+            }
+
         def test_simple(self, workspace: Path) -> None:
             s = DefaultProjectFileSearcher(
                 source_excluded_dir_names=set(),
