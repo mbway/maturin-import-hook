@@ -70,7 +70,7 @@ class LockedBuildCache:
         with self._build_status_path(build_status.source_path).open("w") as f:
             json.dump(build_status.to_json(), f, indent="  ")
 
-    def get_build_status(self, source_path: Path) -> Optional[BuildStatus]:
+    def get_build_status(self, source_path: Path) -> BuildStatus | None:
         try:
             with self._build_status_path(source_path).open("r") as f:
                 return BuildStatus.from_json(json.load(f))
@@ -83,7 +83,7 @@ class LockedBuildCache:
 
 
 class BuildCache:
-    def __init__(self, build_dir: Optional[Path], lock_timeout_seconds: Optional[float]) -> None:
+    def __init__(self, build_dir: Path | None, lock_timeout_seconds: float | None) -> None:
         self._build_dir = build_dir if build_dir is not None else get_default_build_dir()
         self._lock = filelock.FileLock(
             self._build_dir / "lock", timeout=-1 if lock_timeout_seconds is None else lock_timeout_seconds
@@ -245,7 +245,7 @@ def build_unpacked_wheel(maturin_path: Path, manifest_path: Path, output_dir: Pa
     return output
 
 
-def _find_single_file(dir_path: Path, extension: Optional[str]) -> Optional[Path]:
+def _find_single_file(dir_path: Path, extension: str | None) -> Path | None:
     if dir_path.exists():
         candidate_files = [p for p in dir_path.iterdir() if extension is None or p.suffix == extension]
     else:
@@ -261,8 +261,8 @@ def maturin_output_has_warnings(output: str) -> bool:
 class Freshness:
     is_fresh: bool
     reason: str
-    oldest_installed_path: Optional[Path]
-    newest_source_path: Optional[Path]
+    oldest_installed_path: Path | None
+    newest_source_path: Path | None
 
 
 def get_installation_freshness(
@@ -326,7 +326,7 @@ def get_installation_freshness(
         return Freshness(True, "", oldest_installed_path, newest_source_path)
 
 
-def get_installation_mtime(installed_paths: Iterable[Path]) -> Optional[float]:
+def get_installation_mtime(installed_paths: Iterable[Path]) -> float | None:
     try:
         installation_mtime = min(path.stat().st_mtime for path in installed_paths)
     except ValueError:

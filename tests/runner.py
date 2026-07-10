@@ -10,7 +10,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-# ruff: noqa: INP001, E402
+# ruff: noqa: E402
 
 
 script_dir = Path(__file__).resolve().parent
