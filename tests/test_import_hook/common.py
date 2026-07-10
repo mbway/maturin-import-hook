@@ -36,6 +36,9 @@ IGNORED_TEST_CRATES = {
     "license-test",  # not imported as a python module (subprocess only)
     "pyo3-bin",  # not imported as a python module (subprocess only)
     "workspace-inverted-order",  # this directory is not a maturin package, only the subdirectory
+    "bin-with-python-module",
+    "cffi-mixed-include-exclude",  # build-time generated files not excluded from import hook. Build always stale
+    "pyo3-mixed-include-exclude",  # build-time generated files not excluded from import hook. Build always stale
 }
 # these test-crates do not work with free-threaded python
 # (to verify: run `maturin develop` to install them into an appropriate virtualenv and try to run the

@@ -40,6 +40,7 @@ class MaturinSettings:
     extras: list[str] | None = None
     uv: bool = False
     skip_install: bool = False
+    generate_stubs: bool = False
 
     @staticmethod
     def default() -> "MaturinSettings":
@@ -112,6 +113,8 @@ class MaturinSettings:
                 args.append("--uv")
             if self.skip_install:
                 args.append("--skip-install")
+            if self.generate_stubs:
+                args.append("--generate-stubs")
 
         if self.rustc_flags is not None:
             args.append("--")
@@ -170,6 +173,7 @@ class MaturinSettings:
         parser.add_argument("-E", "--extras", type=lambda arg: arg.split(","), action="extend")
         parser.add_argument("--uv", action="store_true")
         parser.add_argument("--skip-install", action="store_true")
+        parser.add_argument("--generate-stubs", action="store_true")
 
         return parser
 

@@ -33,26 +33,26 @@ fn resolve_package(project_root: &Path) -> Result<Value> {
 
     let build_options: BuildOptions = Default::default();
     let build_context = build_options.into_build_context().build()?;
-    let extension_module_dir = if build_context.project_layout.python_module.is_some() {
+    let extension_module_dir = if build_context.project.project_layout.python_module.is_some() {
         Some(relative_path(
-            &build_context.project_layout.rust_module,
+            &build_context.project.project_layout.rust_module,
             &project_root,
         )?)
     } else {
         None
     };
-    let python_module = if let Some(p) = build_context.project_layout.python_module {
+    let python_module = if let Some(p) = build_context.project.project_layout.python_module {
         Some(relative_path(&p, &project_root)?)
     } else {
         None
     };
 
     Ok(json!({
-        "cargo_manifest_path": relative_path(&build_context.manifest_path, &project_root)?,
-        "python_dir": relative_path(&build_context.project_layout.python_dir, &project_root)?,
+        "cargo_manifest_path": relative_path(&build_context.project.manifest_path, &project_root)?,
+        "extension_module_dir": extension_module_dir,
+        "module_full_name": build_context.project.module_name,
+        "python_dir": relative_path(&build_context.project.project_layout.python_dir, &project_root)?,
         "python_module": python_module,
-        "module_full_name": build_context.module_name,
-        "extension_module_dir": extension_module_dir
     }))
 }
 
