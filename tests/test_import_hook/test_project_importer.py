@@ -70,7 +70,7 @@ def _reset_virtualenv() -> Iterator[None]:
 @pytest.mark.parametrize(
     "project_name",
     # path dependencies tested separately
-    sorted(set(all_usable_test_crate_names()) - {"pyo3-mixed-with-path-dep"}),
+    sorted(set(all_usable_test_crate_names()) - {"pyo3-mixed-with-path-dep", "cffi-mixed-with-path-dep"}),
 )
 def test_install_from_script_inside(workspace: Path, project_name: str) -> None:
     """This test ensures that when a script is run from within a maturin project, the
@@ -217,7 +217,7 @@ def test_do_not_rebuild_if_installed_non_editable(workspace: Path, project_name:
 @pytest.mark.parametrize(
     "project_name",
     # path dependencies tested separately
-    sorted(set(all_usable_test_crate_names()) - {"pyo3-mixed-with-path-dep"}),
+    sorted(set(all_usable_test_crate_names()) - {"pyo3-mixed-with-path-dep", "cffi-mixed-with-path-dep"}),
 )
 def test_import_editable_installed_rebuild(workspace: Path, project_name: str, initially_mixed: bool) -> None:
     """This test ensures that an editable installed project is rebuilt when necessary if the import
@@ -269,7 +269,7 @@ def test_import_editable_installed_rebuild(workspace: Path, project_name: str, i
 @pytest.mark.parametrize(
     "project_name",
     # path dependencies tested separately
-    sorted(set(mixed_test_crate_names()) - {"pyo3-mixed-with-path-dep"}),
+    sorted(set(mixed_test_crate_names()) - {"pyo3-mixed-with-path-dep", "cffi-mixed-with-path-dep"}),
 )
 def test_import_editable_installed_mixed_missing(workspace: Path, project_name: str) -> None:
     """This test ensures that editable installed mixed projects are rebuilt if they are imported
@@ -552,7 +552,9 @@ def test_low_resolution_mtime(workspace: Path) -> None:
 
     def set_mtimes_equal() -> None:
         s = DefaultProjectFileSearcher()
-        oldest_package_path = min((p for p in s.get_installation_paths(package_path)), key=lambda p: p.stat().st_mtime)
+        oldest_package_path = min(
+            (p for p in s.get_installation_paths([package_path])), key=lambda p: p.stat().st_mtime
+        )
         times = get_file_times(oldest_package_path)
         set_file_times_recursive(package_path, times)
         set_file_times_recursive(source_root, times)
@@ -1204,10 +1206,10 @@ class TestDefaultProjectFileSearcher:
                 source_excluded_dir_markers=set(),
                 source_excluded_file_extensions=set(),
             )
-            assert list(s.get_source_paths(workspace, [], workspace / "missing")) == []
+            assert list(s.get_source_paths(workspace, [], [workspace / "missing"])) == []
             extension_dir = workspace / "extension"
             extension_dir.mkdir()
-            assert list(s.get_source_paths(workspace, [], extension_dir)) == []
+            assert list(s.get_source_paths(workspace, [], [extension_dir])) == []
 
         def test_missing_paths(self, workspace: Path) -> None:
             s = DefaultProjectFileSearcher(
@@ -1217,10 +1219,10 @@ class TestDefaultProjectFileSearcher:
             )
             (workspace / "extension").touch()
             with pytest.raises(FileNotFoundError):
-                list(s.get_source_paths(workspace, [workspace / "missing"], workspace / "extension"))
+                list(s.get_source_paths(workspace, [workspace / "missing"], [workspace / "extension"]))
 
             with pytest.raises(FileNotFoundError):
-                list(s.get_source_paths(workspace / "missing", [], workspace / "extension"))
+                list(s.get_source_paths(workspace / "missing", [], [workspace / "extension"]))
 
         def test_excluded_dir_names(self, workspace: Path) -> None:
             s = DefaultProjectFileSearcher(
@@ -1235,7 +1237,7 @@ class TestDefaultProjectFileSearcher:
             (workspace / "src/data/subdir").mkdir()
             (workspace / "src/data/subdir/more_data.rs").touch()
 
-            paths = set(s.get_source_paths(workspace, [], workspace / "extension_module"))
+            paths = set(s.get_source_paths(workspace, [], [workspace / "extension_module"]))
             assert paths == {workspace / "src/source_file.rs"}
 
         def test_excluded_dir_markers(self, workspace: Path) -> None:
@@ -1251,7 +1253,7 @@ class TestDefaultProjectFileSearcher:
             (workspace / "src/data/subdir").mkdir()
             (workspace / "src/data/subdir/more_data.rs").touch()
 
-            paths = set(s.get_source_paths(workspace, [], workspace / "extension_module"))
+            paths = set(s.get_source_paths(workspace, [], [workspace / "extension_module"]))
             assert paths == {
                 workspace / "src/source_file.rs",
                 workspace / "src/data/data.rs",
@@ -1260,13 +1262,13 @@ class TestDefaultProjectFileSearcher:
 
             (workspace / "src/data/.excluded").touch()
 
-            paths = set(s.get_source_paths(workspace, [], workspace / "extension_module"))
+            paths = set(s.get_source_paths(workspace, [], [workspace / "extension_module"]))
             assert paths == {workspace / "src/source_file.rs"}
 
             (workspace / "src/data/.excluded").unlink()
             (workspace / "src/data/.excluded").mkdir()
 
-            paths = set(s.get_source_paths(workspace, [], workspace / "extension_module"))
+            paths = set(s.get_source_paths(workspace, [], [workspace / "extension_module"]))
             assert paths == {
                 workspace / "src/source_file.rs",
                 workspace / "src/data/data.rs",
@@ -1284,14 +1286,14 @@ class TestDefaultProjectFileSearcher:
             source_file_path = src_dir / "source_file.rs"
             source_file_path.touch()
             (workspace / "extension_module").touch()
-            paths = set(s.get_source_paths(workspace, [], workspace / "extension_module"))
+            paths = set(s.get_source_paths(workspace, [], [workspace / "extension_module"]))
             assert paths == {source_file_path}
 
             (workspace / "extension_module").unlink()
             (workspace / "extension_module").mkdir()
             (workspace / "extension_module/stuff").touch()
 
-            paths = set(s.get_source_paths(workspace, [], workspace / "extension_module"))
+            paths = set(s.get_source_paths(workspace, [], [workspace / "extension_module"]))
             assert paths == {source_file_path}
 
             s = DefaultProjectFileSearcher(
@@ -1299,7 +1301,7 @@ class TestDefaultProjectFileSearcher:
                 source_excluded_dir_markers=set(),
                 source_excluded_file_extensions=set(),
             )
-            paths = set(s.get_source_paths(workspace, [], workspace / "extension_module"))
+            paths = set(s.get_source_paths(workspace, [], [workspace / "extension_module"]))
             assert paths == set()
 
         def test_simple_path_dep(self, workspace: Path) -> None:
@@ -1321,7 +1323,7 @@ class TestDefaultProjectFileSearcher:
                 source_excluded_dir_markers=set(),
                 source_excluded_file_extensions=set(),
             )
-            paths = set(s.get_source_paths(project_a, [project_b], extension_dir))
+            paths = set(s.get_source_paths(project_a, [project_b], [extension_dir]))
             assert paths == {project_a / "source.py", project_b / "source.py", project_b / "__pycache__/source.pyc"}
 
             s = DefaultProjectFileSearcher(
@@ -1329,7 +1331,7 @@ class TestDefaultProjectFileSearcher:
                 source_excluded_dir_markers=set(),
                 source_excluded_file_extensions=set(),
             )
-            paths = set(s.get_source_paths(project_a, [project_b], extension_dir))
+            paths = set(s.get_source_paths(project_a, [project_b], [extension_dir]))
             assert paths == {project_a / "source.py", project_b / "source.py"}
 
             s = DefaultProjectFileSearcher(
@@ -1337,7 +1339,7 @@ class TestDefaultProjectFileSearcher:
                 source_excluded_dir_markers=set(),
                 source_excluded_file_extensions={".pyc"},
             )
-            paths = set(s.get_source_paths(project_a, [project_b], extension_dir))
+            paths = set(s.get_source_paths(project_a, [project_b], [extension_dir]))
             assert paths == {project_a / "source.py", project_b / "source.py"}
 
         def test_extension_outside_project_source(self, tmp_path: Path) -> None:
@@ -1355,7 +1357,7 @@ class TestDefaultProjectFileSearcher:
                 source_excluded_dir_markers=set(),
                 source_excluded_file_extensions=set(),
             )
-            paths = set(s.get_source_paths(project_dir, [], extension_path))
+            paths = set(s.get_source_paths(project_dir, [], [extension_path]))
             assert paths == {project_dir / "source"}
 
     def test_get_installation_paths(self, workspace: Path) -> None:
@@ -1364,8 +1366,8 @@ class TestDefaultProjectFileSearcher:
             source_excluded_dir_markers=set(),
             source_excluded_file_extensions={".so"},
         )
-        assert set(s.get_installation_paths(workspace)) == set()
-        assert set(s.get_installation_paths(workspace / "missing")) == set()
+        assert set(s.get_installation_paths([workspace])) == set()
+        assert set(s.get_installation_paths([workspace / "missing"])) == set()
 
         (workspace / "extension.so").touch()
         (workspace / "misc").touch()
@@ -1377,8 +1379,8 @@ class TestDefaultProjectFileSearcher:
         (workspace / "__pycache__").mkdir()
         (workspace / "__pycache__/__init__.pyc").touch()
 
-        assert set(s.get_installation_paths(workspace / "extension.so")) == {workspace / "extension.so"}
-        assert set(s.get_installation_paths(workspace)) == {
+        assert set(s.get_installation_paths([workspace / "extension.so"])) == {workspace / "extension.so"}
+        assert set(s.get_installation_paths([workspace])) == {
             workspace / "extension.so",
             workspace / "misc",
             workspace / "subdir/file.py",

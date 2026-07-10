@@ -22,7 +22,8 @@ def _check_shared_build_dir() -> None:
     """
     build_dir = get_default_build_dir()
     assert build_dir.is_absolute(), (
-        "MATURIN_BUILD_DIR must be an absolute path in order for tests with multiple builds to share the build directory"
+        "MATURIN_BUILD_DIR must be an absolute path in order for tests with "
+        "multiple builds to share the build directory"
     )
 
 
