@@ -445,7 +445,9 @@ def _find_installed_package_roots(resolved: MaturinProject, package_spec: Module
     Returns None if no installation roots could be found.
     """
     roots: list[Path] = []
-    if resolved.extension_module_dir is not None:
+    if resolved.bindings == "bin" and resolved.binary_names:
+        roots.extend(_find_installed_binaries(resolved.binary_names))
+    elif resolved.extension_module_dir is not None:
         installed_package_root = _find_extension_module(
             resolved.extension_module_dir, resolved.module_name, require=False
         )
@@ -453,8 +455,6 @@ def _find_installed_package_roots(resolved: MaturinProject, package_spec: Module
             logger.debug('no extension module found in "%s"', resolved.extension_module_dir)
         else:
             roots.append(installed_package_root)
-    elif resolved.bindings == "bin" and resolved.binary_names:
-        roots.extend(_find_installed_binaries(resolved.binary_names))
     elif package_spec.origin is not None:
         roots.append(Path(package_spec.origin).parent)
     else:
