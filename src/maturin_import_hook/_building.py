@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import hashlib
 import json
 import logging
@@ -8,18 +10,21 @@ import shutil
 import subprocess
 import sys
 import zipfile
-from collections.abc import Generator, Iterable
 from contextlib import contextmanager
 from dataclasses import dataclass
 from operator import itemgetter
 from pathlib import Path
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any
 
 import filelock
 
 from maturin_import_hook._logging import logger
 from maturin_import_hook.error import ImportHookError, MaturinError
-from maturin_import_hook.settings import MaturinSettings
+
+if TYPE_CHECKING:
+    from collections.abc import Generator, Iterable
+
+    from maturin_import_hook.settings import MaturinSettings
 
 
 @dataclass
@@ -43,7 +48,7 @@ class BuildStatus:
         }
 
     @staticmethod
-    def from_json(json_data: dict[Any, Any]) -> Optional["BuildStatus"]:
+    def from_json(json_data: dict[Any, Any]) -> BuildStatus | None:
         try:
             return BuildStatus(
                 build_mtime=json_data["build_mtime"],
@@ -96,7 +101,7 @@ class BuildCache:
 
 
 @contextmanager
-def _acquire_lock(lock: filelock.FileLock) -> Generator[None, None, None]:
+def _acquire_lock(lock: filelock.BaseFileLock) -> Generator[None, None, None]:
     try:
         try:
             with lock.acquire(blocking=False):

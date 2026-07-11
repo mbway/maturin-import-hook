@@ -15,6 +15,7 @@ from typing import Any
 
 import pytest
 
+from maturin_import_hook._resolve_project import has_experimental_inspect
 from maturin_import_hook.project_importer import DefaultProjectFileSearcher, _load_dist_info
 
 from .common import (
@@ -70,7 +71,7 @@ def _reset_virtualenv() -> Iterator[None]:
 @pytest.mark.parametrize(
     "project_name",
     # path dependencies tested separately
-    sorted(set(all_usable_test_crate_names()) - {"pyo3-mixed-with-path-dep", "cffi-mixed-with-path-dep"}),
+    sorted(set(all_usable_test_crate_names()) - {"cffi-mixed-with-path-dep"}),
 )
 def test_install_from_script_inside(workspace: Path, project_name: str) -> None:
     """This test ensures that when a script is run from within a maturin project, the
@@ -217,7 +218,7 @@ def test_do_not_rebuild_if_installed_non_editable(workspace: Path, project_name:
 @pytest.mark.parametrize(
     "project_name",
     # path dependencies tested separately
-    sorted(set(all_usable_test_crate_names()) - {"pyo3-mixed-with-path-dep", "cffi-mixed-with-path-dep"}),
+    sorted(set(all_usable_test_crate_names()) - {"cffi-mixed-with-path-dep"}),
 )
 def test_import_editable_installed_rebuild(workspace: Path, project_name: str, initially_mixed: bool) -> None:
     """This test ensures that an editable installed project is rebuilt when necessary if the import
@@ -269,7 +270,7 @@ def test_import_editable_installed_rebuild(workspace: Path, project_name: str, i
 @pytest.mark.parametrize(
     "project_name",
     # path dependencies tested separately
-    sorted(set(mixed_test_crate_names()) - {"pyo3-mixed-with-path-dep", "cffi-mixed-with-path-dep"}),
+    sorted(set(mixed_test_crate_names()) - {"cffi-mixed-with-path-dep"}),
 )
 def test_import_editable_installed_mixed_missing(workspace: Path, project_name: str) -> None:
     """This test ensures that editable installed mixed projects are rebuilt if they are imported
@@ -444,7 +445,7 @@ def test_rebuild_on_change_to_path_dependency(workspace: Path) -> None:
     """This test ensures that the imported project is rebuilt if any of its path
     dependencies are edited.
     """
-    project_name = "pyo3-mixed-with-path-dep"
+    project_name = "cffi-mixed-with-path-dep"
     _uninstall(project_name)
 
     project_dir = _get_project_copy(TEST_CRATES_DIR / project_name, workspace / project_name)
@@ -457,12 +458,12 @@ def test_rebuild_on_change_to_path_dependency(workspace: Path) -> None:
     check_installed = "{}\n{}".format(
         IMPORT_HOOK_HEADER,
         dedent("""\
-        import pyo3_mixed_with_path_dep
+        import cffi_mixed_with_path_dep
 
-        assert pyo3_mixed_with_path_dep.get_42() == 42, 'get_42 did not return 42'
+        assert cffi_mixed_with_path_dep.lib.add_21(21) == 42, 'add_21 did not return 42'
 
-        print('21 is half 42:', pyo3_mixed_with_path_dep.is_half(21, 42))
-        print('21 is half 63:', pyo3_mixed_with_path_dep.is_half(21, 63))
+        print('21 is half 42:', cffi_mixed_with_path_dep.lib.is_half(21, 42))
+        print('21 is half 63:', cffi_mixed_with_path_dep.lib.is_half(21, 63))
         """),
     )
 
@@ -1505,6 +1506,8 @@ def _install_editable(project_dir: Path) -> None:
     cmd = [maturin_path, "develop"]
     if PackageInstallerBackend.from_env() == PackageInstallerBackend.UV:
         cmd.append("--uv")
+    if has_experimental_inspect(project_dir):
+        cmd.append("--generate-stubs")
     subprocess.check_call(cmd, cwd=project_dir, env=env)
 
 

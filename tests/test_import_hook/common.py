@@ -32,8 +32,8 @@ MATURIN_DIR = (script_dir / "../maturin").resolve()
 TEST_CRATES_DIR = MATURIN_DIR / "test-crates"
 
 IGNORED_TEST_CRATES = {
-    "hello-world",  # not imported as a python module (subprocess only)
-    "license-test",  # not imported as a python module (subprocess only)
+    "hello-world",  # an example more than a test case
+    "license-test",  # not an interesting test case
     "workspace-inverted-order",  # this directory is not a maturin package, only the subdirectory
     "cffi-mixed-include-exclude",  # build-time generated files not excluded from import hook. Build always stale
     "pyo3-mixed-include-exclude",  # build-time generated files not excluded from import hook. Build always stale

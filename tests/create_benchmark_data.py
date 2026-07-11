@@ -80,7 +80,7 @@ def create_benchmark_environment(root: Path, config: BenchmarkConfig) -> None:
 
     log.info("creating benchmark environment at %s", root)
     root.mkdir(parents=True, exist_ok=False)
-    venv = VirtualEnv.create(root / "venv", Path(sys.executable), PackageInstallerBackend.UV)
+    venv = VirtualEnv.create(root / "venv", Path(sys.executable), PackageInstallerBackend.UV, offline=False)
 
     venv.installer.install(repo_root, editable=True)
 

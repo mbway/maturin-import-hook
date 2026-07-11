@@ -5,6 +5,7 @@ These tests ensure that the import hook behaves correctly when installing a wide
 The recommended way to run the tests is to run:
 
 ```bash
+# run only after changing between maturin versions or after the first commit
 git submodule update --init ./maturin
 
 # run the tests. interesting interpreter versions to try are the minimum supported, latest and free-threading variants
