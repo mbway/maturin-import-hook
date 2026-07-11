@@ -31,6 +31,7 @@ from .common import (
     mixed_test_crate_names,
     remove_ansii_escape_characters,
     remove_executable_from_path,
+    resolved_packages,
     run_concurrent_python,
     run_python,
     run_python_code,
@@ -218,7 +219,8 @@ def test_do_not_rebuild_if_installed_non_editable(workspace: Path, project_name:
 @pytest.mark.parametrize(
     "project_name",
     # path dependencies tested separately
-    sorted(set(all_usable_test_crate_names()) - {"cffi-mixed-with-path-dep"}),
+    # uniffi-multiple-crates: blank template uses directory name as package name, but real project uses "a"
+    sorted(set(all_usable_test_crate_names()) - {"cffi-mixed-with-path-dep", "uniffi-multiple-crates"}),
 )
 def test_import_editable_installed_rebuild(workspace: Path, project_name: str, initially_mixed: bool) -> None:
     """This test ensures that an editable installed project is rebuilt when necessary if the import
@@ -1473,17 +1475,32 @@ def test_non_directory_in_search_path(tmp_path: Path) -> None:
         assert not file_in_sys_path, "sys.path should only contain the script file path on Windows"
 
 
+def _get_package_name(project_name: str) -> str:
+    """Get the actual package name for a test crate.
+
+    For most crates, the package name is derived from the directory name (with hyphens replaced by underscores).
+    However, some crates (like uniffi-multiple-crates) have package names that differ from their directory names.
+    This function looks up the correct name from resolved_packages().
+    """
+    resolved = resolved_packages().get(project_name)
+    if resolved is not None and resolved.module_full_name:
+        # module_full_name is the full dotted module name (e.g. "a" or "cffi_mixed.rust_module.rust")
+        # The top-level module name is what the import hook uses in its log messages
+        return resolved.module_full_name.split(".")[0]
+    return with_underscores(project_name)
+
+
 def _up_to_date_message(project_name: str) -> str:
-    return f'package up to date: "{with_underscores(project_name)}"'
+    return f'package up to date: "{_get_package_name(project_name)}"'
 
 
 def _rebuilt_message(project_name: str) -> str:
-    return f'rebuilt and loaded package "{with_underscores(project_name)}"'
+    return f'rebuilt and loaded package "{_get_package_name(project_name)}"'
 
 
 def _uninstall(project_name: str) -> None:
     installer = PackageInstaller.from_env()
-    installer.uninstall(project_name)
+    installer.uninstall(_get_package_name(project_name))
 
 
 def _is_mixed_project(project_name: str) -> bool:
@@ -1518,12 +1535,12 @@ def _install_non_editable(project_dir: Path) -> None:
 
 
 def _is_installed_as_pth(project_name: str) -> bool:
-    package_name = with_underscores(project_name)
+    package_name = _get_package_name(project_name)
     return any((Path(path) / f"{package_name}.pth").exists() for path in site.getsitepackages())
 
 
 def _is_installed_editable_with_direct_url(project_name: str, project_dir: Path) -> bool:
-    package_name = with_underscores(project_name)
+    package_name = _get_package_name(project_name)
     for path in site.getsitepackages():
         linked_path, is_editable = _load_dist_info(Path(path), package_name)
         if linked_path == project_dir:

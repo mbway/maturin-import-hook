@@ -37,7 +37,6 @@ IGNORED_TEST_CRATES = {
     "workspace-inverted-order",  # this directory is not a maturin package, only the subdirectory
     "cffi-mixed-include-exclude",  # build-time generated files not excluded from import hook. Build always stale
     "pyo3-mixed-include-exclude",  # build-time generated files not excluded from import hook. Build always stale
-    "uniffi-multiple-crates",  # package name ("a") differs from directory name, breaking test assumptions
 }
 # these test-crates do not work with free-threaded python
 # (to verify: run `maturin develop` to install them into an appropriate virtualenv and try to run the
